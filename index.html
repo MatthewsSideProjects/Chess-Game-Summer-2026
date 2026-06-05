@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chess Game</title>
+        <link rel="stylesheet" href="chess.css">
+    </head>
+    <body>
+        <div id="container">
+            <div id="ui">
+                <div id="status"></div>
+                <button id="reset">Reset Game</button>
+            </div>
+            <div id="board"></div>
+        </div>
+        <script src="chess.js"></script>
+        <div id="promotion-modal" style="display:none;">
+            <div id="promotion-box">
+                <p>Choose a piece:</p>
+                <div id="promotion-choices"></div>
+            </div>
+        </div>
+    </body>
+</html>
