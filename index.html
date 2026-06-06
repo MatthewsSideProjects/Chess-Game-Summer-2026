@@ -7,6 +7,11 @@
         <link rel="stylesheet" href="chess.css">
     </head>
     <body>
+        <script>
+         if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                document.body.innerHTML = "<p>This app is not supported on mobile devices. Please open it on a desktop browser.</p>";
+            }
+        </script>
         <div id="container">
             <div id="ui">
                 <div id="status"></div>
