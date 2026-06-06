@@ -108,6 +108,8 @@ function newGame() {
             }
         }
    });
+   whiteCastle = true;
+   blackCastle = true;
 }
 function setPiece(space, piece, color) {
     clearPiece(space);
@@ -137,7 +139,7 @@ function setPiece(space, piece, color) {
                 clearPiece(document.getElementById("0-7"));
                 blackCastle = false;
             } else {
-                blackCastle;
+                blackCastle = false;
             }
         }
     }
@@ -335,7 +337,7 @@ function VerticalMoves(space, directionMod, test, pawn, firstMove) {
         }
     }
     let targetSpace;
-    for (let i = 1; i <= maxSteps; i++) {
+    for (let i = 1, j = 1; j <= maxSteps; i++, j++) {
         x = parseInt(space.dataset.col);
         y = parseInt(space.dataset.row) + directionMod * i;
         if (y < 0 || y > 7) break;
@@ -345,12 +347,13 @@ function VerticalMoves(space, directionMod, test, pawn, firstMove) {
             if (pawn) break;
             testDirectory(targetSpace, test);
             if (test === "checks" && targetSpace.dataset.piece === "king" && targetSpace.classList.contains(turn)) {
-                targetSpace = document.getElementById(x + "-" + (y + directionMod));
-                testDirectory(targetSpace, test);
+                j = 6;
+            } else {
+                break;
             }
-            break;
+        } else {
+            testDirectory(targetSpace, test);
         }
-        testDirectory(targetSpace, test);
     }
 }
 function HorizontalMoves(space, directionMod, test) {
@@ -620,26 +623,16 @@ function findSafeSpaces() {
     spaces.forEach(space => {
         if (space.classList.contains(turn)) {
             type = space.dataset.piece;
-            if (type === "pawn") {
-                if (turn === "white") {
-                    if (space.dataset.col > 0 && (!space.classList.contains("pinned") || space.classList.contains("diagonalNWSE"))) {
-                        add = document.getElementById((parseInt(space.dataset.col) - 1) + "-" + (parseInt(space.dataset.row) + 1));
-                        testDirectory(add, "safe")
-                    }
-                    if (space.dataset.col < 7 && (!space.classList.contains("pinned") || space.classList.contains("diagonalNESW"))) {
-                        add = document.getElementById((parseInt(space.dataset.col) + 1) + "-" + (parseInt(space.dataset.row) + 1));
-                        testDirectory(add, "safe")
-                    }
-                } else {
-                    if (space.dataset.col > 0 && (!space.classList.contains("pinned") || space.classList.contains("diagonalNESW"))) {
-                        add = document.getElementById((parseInt(space.dataset.col) - 1) + "-" + (parseInt(space.dataset.row) - 1));
-                        testDirectory(add, "safe")
-                    }
-                    if (space.dataset.col < 7 && (!space.classList.contains("pinned") || space.classList.contains("diagonalNWSE"))) {
-                        add = document.getElementById((parseInt(space.dataset.col) + 1) + "-" + (parseInt(space.dataset.row) - 1));
-                        testDirectory(add, "safe")
-                    }
-                }
+            if (type === "pawn" && !space.classList.contains("pinned")) {
+               if (turn === "white") {
+                VerticalMoves(space, 1, "safe", true, parseInt(space.dataset.row) === 2);
+                DiagonalNESW(space, 1, "safe", true);
+                DiagonalNWSE(space, 1, "safe", true);
+               } else {
+                VerticalMoves(space, -1, "safe", true, parseInt(space.dataset.row) === 6);
+                DiagonalNESW(space, -1, "safe", true);
+                DiagonalNWSE(space, -1, "safe", true);
+               }
             } else if (type === "rook") {
                 if (space.classList.contains("pinned")) {
                     if (space.classList.contains("vertical")) {
@@ -741,10 +734,21 @@ function confirmCheckmate() {
         }
     }
     forcedMoves = chances.filter(chance => safeSpaces.includes(chance));
+    if (turn === "white") {
+        whiteKingRange = whiteKingRange.filter(range => !threatenedSpaces.includes(range));
+        kingsList = whiteKingRange;
+    } else {
+        blackKingRange = blackKingRange.filter(range => !threatenedSpaces.includes(range));
+        kingsList = blackKingRange;
+    }
     if (forcedMoves.length === 0 && check === "block") {
         check = "win";
     } else if (forcedMoves.length === 0) {
-        check = "king";
+        if (kingsList.length === 0) {
+            check = "win";
+        } else {
+            check = "king";
+        }
     }
 }
 function confirmStalemate() {
