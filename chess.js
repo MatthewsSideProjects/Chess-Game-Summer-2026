@@ -124,6 +124,8 @@ function setPiece(space, piece, color) {
                 setPiece(document.getElementById("3-0"), "rook", "white")
                 clearPiece(document.getElementById("0-0"));
                 whiteCastle = false;
+            } else {
+                whiteCastle = false
             }
         } else {
              if (blackCastle && parseInt(space.dataset.col) === 6) {
@@ -134,6 +136,8 @@ function setPiece(space, piece, color) {
                 setPiece(document.getElementById("3-7"), "rook", "black")
                 clearPiece(document.getElementById("0-7"));
                 blackCastle = false;
+            } else {
+                blackCastle;
             }
         }
     }
